@@ -1,0 +1,209 @@
+// Typy środowiska testowego platformy (podzbiór Vitest / Jest) – dla podpowiedzi w edytorze.
+type RekruAnyFn = (...args: any[]) => any;
+type RekruTestBody = (done?: any) => unknown | Promise<unknown>;
+
+interface RekruMockContext<T extends RekruAnyFn> {
+  calls: Parameters<T>[];
+  results: { type: 'return' | 'throw'; value: any }[];
+  instances: any[];
+  lastCall: Parameters<T> | undefined;
+}
+
+interface RekruMock<T extends RekruAnyFn = RekruAnyFn> {
+  (...args: Parameters<T>): ReturnType<T>;
+  mock: RekruMockContext<T>;
+  getMockName(): string;
+  mockName(name: string): this;
+  getMockImplementation(): T | undefined;
+  mockImplementation(fn: T): this;
+  mockImplementationOnce(fn: T): this;
+  mockReturnValue(value: ReturnType<T>): this;
+  mockReturnValueOnce(value: ReturnType<T>): this;
+  mockResolvedValue(value: Awaited<ReturnType<T>>): this;
+  mockResolvedValueOnce(value: Awaited<ReturnType<T>>): this;
+  mockRejectedValue(error: unknown): this;
+  mockRejectedValueOnce(error: unknown): this;
+  mockReturnThis(): this;
+  mockClear(): this;
+  mockReset(): this;
+  mockRestore(): void;
+}
+
+interface RekruVi {
+  fn<T extends RekruAnyFn = RekruAnyFn>(implementation?: T): RekruMock<T>;
+  spyOn<O extends object, K extends keyof O>(object: O, method: K): O[K] extends RekruAnyFn ? RekruMock<O[K]> : RekruMock;
+  spyOn<O extends object, K extends keyof O>(object: O, property: K, accessType: 'get' | 'set'): RekruMock<() => O[K]>;
+  isMockFunction(fn: unknown): fn is RekruMock;
+  mocked<T>(item: T): T extends RekruAnyFn ? RekruMock<T> & T : T;
+  clearAllMocks(): void;
+  resetAllMocks(): void;
+  restoreAllMocks(): void;
+}
+
+interface RekruMatchers<R = void> {
+  not: RekruMatchers<R>;
+  resolves: RekruMatchers<Promise<void>>;
+  rejects: RekruMatchers<Promise<void>>;
+  toBe(expected: unknown): R;
+  toEqual(expected: unknown): R;
+  toStrictEqual(expected: unknown): R;
+  toBeTruthy(): R;
+  toBeFalsy(): R;
+  toBeNull(): R;
+  toBeUndefined(): R;
+  toBeDefined(): R;
+  toBeNaN(): R;
+  toBeGreaterThan(n: number | bigint): R;
+  toBeGreaterThanOrEqual(n: number | bigint): R;
+  toBeLessThan(n: number | bigint): R;
+  toBeLessThanOrEqual(n: number | bigint): R;
+  toBeCloseTo(n: number, numDigits?: number): R;
+  toBeInstanceOf(ctor: abstract new (...args: any[]) => any): R;
+  toBeTypeOf(type: 'string' | 'number' | 'bigint' | 'boolean' | 'symbol' | 'undefined' | 'object' | 'function'): R;
+  toContain(item: unknown): R;
+  toContainEqual(item: unknown): R;
+  toHaveLength(n: number): R;
+  toHaveProperty(path: string | (string | number)[], value?: unknown): R;
+  toMatch(expected: string | RegExp): R;
+  toMatchObject(expected: object | object[]): R;
+  toThrow(expected?: string | RegExp | Error | (abstract new (...args: any[]) => Error)): R;
+  toThrowError(expected?: string | RegExp | Error | (abstract new (...args: any[]) => Error)): R;
+  toHaveBeenCalled(): R;
+  toHaveBeenCalledTimes(n: number): R;
+  toHaveBeenCalledWith(...args: unknown[]): R;
+  toHaveBeenLastCalledWith(...args: unknown[]): R;
+  toHaveBeenNthCalledWith(nth: number, ...args: unknown[]): R;
+  toHaveReturned(): R;
+  toHaveReturnedWith(value: unknown): R;
+  toBeCalled(): R;
+  toBeCalledTimes(n: number): R;
+  toBeCalledWith(...args: unknown[]): R;
+}
+
+interface RekruExpect {
+  <T = unknown>(actual: T, message?: string): RekruMatchers<void>;
+  anything(): any;
+  any(ctor: unknown): any;
+  objectContaining<T = any>(obj: T): any;
+  arrayContaining<T = unknown>(arr: readonly T[]): any;
+  stringContaining(s: string): any;
+  stringMatching(r: string | RegExp): any;
+  closeTo(n: number, numDigits?: number): any;
+  assertions(n: number): void;
+  hasAssertions(): void;
+  not: {
+    objectContaining<T = any>(obj: T): any;
+    arrayContaining<T = unknown>(arr: readonly T[]): any;
+    stringContaining(s: string): any;
+    stringMatching(r: string | RegExp): any;
+  };
+}
+
+interface RekruEach<Ret> {
+  <T extends readonly [unknown, ...unknown[]]>(table: readonly T[]): (name: string, fn: (...args: T) => unknown, timeout?: number) => Ret;
+  <T>(table: readonly T[]): (name: string, fn: (arg: T) => unknown, timeout?: number) => Ret;
+  (strings: TemplateStringsArray, ...values: any[]): (name: string, fn: (arg: any) => unknown, timeout?: number) => Ret;
+}
+
+interface RekruTestFn {
+  (name: string, fn?: RekruTestBody, timeout?: number): void;
+  skip: RekruTestFn;
+  only: RekruTestFn;
+  concurrent: RekruTestFn;
+  todo(name: string): void;
+  skipIf(condition: unknown): RekruTestFn;
+  runIf(condition: unknown): RekruTestFn;
+  each: RekruEach<void>;
+}
+
+interface RekruDescribeFn {
+  (name: string, fn?: () => void): void;
+  skip: RekruDescribeFn;
+  only: RekruDescribeFn;
+  concurrent: RekruDescribeFn;
+  todo(name: string): void;
+  skipIf(condition: unknown): RekruDescribeFn;
+  runIf(condition: unknown): RekruDescribeFn;
+  each: RekruEach<void>;
+}
+
+type RekruHook = (fn: RekruTestBody, timeout?: number) => void;
+
+declare var describe: RekruDescribeFn;
+declare var suite: RekruDescribeFn;
+declare var it: RekruTestFn;
+declare var test: RekruTestFn;
+declare var expect: RekruExpect;
+declare var beforeAll: RekruHook;
+declare var afterAll: RekruHook;
+declare var beforeEach: RekruHook;
+declare var afterEach: RekruHook;
+declare var vi: RekruVi;
+declare var jest: RekruVi;
+
+declare module 'vitest' {
+  export const describe: RekruDescribeFn;
+  export const suite: RekruDescribeFn;
+  export const it: RekruTestFn;
+  export const test: RekruTestFn;
+  export const expect: RekruExpect;
+  export const beforeAll: RekruHook;
+  export const afterAll: RekruHook;
+  export const beforeEach: RekruHook;
+  export const afterEach: RekruHook;
+  export const vi: RekruVi;
+  export type Mock<T extends RekruAnyFn = RekruAnyFn> = RekruMock<T>;
+  export type MockedFunction<T extends RekruAnyFn> = RekruMock<T> & T;
+}
+
+declare module '@jest/globals' {
+  export const describe: RekruDescribeFn;
+  export const it: RekruTestFn;
+  export const test: RekruTestFn;
+  export const expect: RekruExpect;
+  export const beforeAll: RekruHook;
+  export const afterAll: RekruHook;
+  export const beforeEach: RekruHook;
+  export const afterEach: RekruHook;
+  export const jest: RekruVi;
+}
+
+declare namespace jest {
+  type Mock<T extends RekruAnyFn = RekruAnyFn> = RekruMock<T>;
+  type MockedFunction<T extends RekruAnyFn> = RekruMock<T> & T;
+}
+
+declare module 'node:test' {
+  export const describe: RekruDescribeFn;
+  export const it: RekruTestFn;
+  export const test: RekruTestFn;
+  export const before: RekruHook;
+  export const after: RekruHook;
+  export const beforeEach: RekruHook;
+  export const afterEach: RekruHook;
+  export const mock: { fn: RekruVi['fn']; method: RekruVi['spyOn'] };
+  export default test;
+}
+
+interface RekruAssert {
+  (value: unknown, message?: string): asserts value;
+  ok(value: unknown, message?: string): asserts value;
+  equal(actual: unknown, expected: unknown, message?: string): void;
+  notEqual(actual: unknown, expected: unknown, message?: string): void;
+  strictEqual<T>(actual: unknown, expected: T, message?: string): asserts actual is T;
+  notStrictEqual(actual: unknown, expected: unknown, message?: string): void;
+  deepEqual(actual: unknown, expected: unknown, message?: string): void;
+  deepStrictEqual<T>(actual: unknown, expected: T, message?: string): asserts actual is T;
+  notDeepStrictEqual(actual: unknown, expected: unknown, message?: string): void;
+  match(value: string, regexp: RegExp, message?: string): void;
+  throws(fn: () => unknown, expected?: unknown, message?: string): void;
+  doesNotThrow(fn: () => unknown, message?: string): void;
+  rejects(promise: Promise<unknown> | (() => Promise<unknown>), expected?: unknown, message?: string): Promise<void>;
+  fail(message?: string): never;
+  strict: RekruAssert;
+}
+
+declare module 'assert' { const assert: RekruAssert; export = assert; }
+declare module 'node:assert' { const assert: RekruAssert; export = assert; }
+declare module 'assert/strict' { const assert: RekruAssert; export = assert; }
+declare module 'node:assert/strict' { const assert: RekruAssert; export = assert; }

@@ -1,0 +1,9 @@
+# Konfiguracja Cloudflare Pages (używana przez `wrangler pages dev` / `wrangler pages deploy`).
+name = "rekru-platform"
+pages_build_output_dir = "dist"
+compatibility_date = "2026-11-01"
+
+[vars]
+# Domyślnie publiczna instancja Judge0 CE (darmowa, limit zapytań per IP).
+JUDGE0_URL = "https://ce.judge0.com"
+JAVA_LANGUAGE_ID = "62"
