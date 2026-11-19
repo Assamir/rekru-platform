@@ -131,7 +131,7 @@ Stan początkowy potwierdzony we wszystkich środowiskach:
 
 ## 8. Co dalej
 
-- Ręczna próba prowadzącego przed rozmową (B-019).
+- Ręczna próba prowadzącego (B-019): potwierdzona 2026-11-19 po wdrożeniu commita `202b4bd`.
 - Sesja o zamknięciu publicznego dostępu (B-020).
 - Uzupełnienie poziomów zadań (B-023) i aktualizacja dokumentów JavaWorldTest (B-026).
 - Otwarte: czy prowadzący nadal potrzebuje przejęcia sterowania ekranem kandydata (OQ-7).

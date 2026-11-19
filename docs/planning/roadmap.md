@@ -37,7 +37,7 @@ Status: `aktywna` / `otwarta ponownie` / `zastąpiona`. Zastąpionych decyzji ni
 | B-016 | Platforma na Javie 17 (Judge0 id 91) | Must | zrobione (2026-11-19) | D-015 | |
 | B-017 | Wątek testów `Test worker` w runnerze Javy | Must | zrobione (2026-11-19) | D-016 | |
 | B-018 | Paczka do IDE: ZIP z projektem Gradle / npm, przyciski u kandydata i prowadzącego | Must | zrobione (2026-11-19) | D-018, D-019, D-020 | Gradle 9.9.0 z wrapperem, Vitest. `npm run test:ide` uruchamia paczki 6 zadań przez Gradle i npm i porównuje wynik z platformą (SC-3). |
-| B-019 | Ręczna próba prowadzącego na wdrożeniu: 6 zadań w przeglądarce, paczka w IntelliJ i VS Code | Must | do zrobienia | D-024, D-028 | SC-3 w samym IDE nie jest pokryte testem automatycznym (test uruchamia paczkę z linii poleceń). |
+| B-019 | Ręczna próba prowadzącego na wdrożeniu: 6 zadań w przeglądarce, paczka w IntelliJ i VS Code | Must | zrobione (2026-11-19) | D-024, D-028 | SC-3 w samym IDE nie jest pokryte testem automatycznym (test uruchamia paczkę z linii poleceń). 2026-11-19: prowadzący potwierdził po wdrożeniu commita `202b4bd`, że działa; zakres jego próby nie został opisany. |
 | B-020 | Zamknięcie publicznego dostępu do zadań (osobna sesja planistyczna) | Should | do zrobienia | D-023 | Dziś zadania są w publicznym repozytorium (A-2). |
 | B-021 | Generator linków do zadań w `tasks/README.md` | Could | do zrobienia | D-025 | Odpowiednik dawnego `check:online`. |
 | B-022 | Własna instancja Judge0 z Javą 21/25 | Won't (na razie) | odłożone | D-015 | Płatny serwer, zmienia założenie A-1. |
@@ -65,6 +65,8 @@ Status: `aktywna` / `otwarta ponownie` / `zastąpiona`. Zastąpionych decyzji ni
 - R-2: wdrożenie na `main` przed ręczną próbą prowadzącego (D-028). Błąd niewykryty przez testy automatyczne trafia od razu pod adres dla kandydata.
 
 ## Kontekst dla kolejnych sesji
+
+- Sesja z 2026-11-19 zamknięta po jawnym potwierdzeniu prowadzącego. Zmiany wdrożone commitem `202b4bd` na `main`; CI przeszło.
 
 - Najbliższa sesja: zamknięcie publicznego dostępu do zadań (B-020). Kolejna: zadania z promptami (B-027).
 - Kryteria sukcesu tej sesji: SC-1 (ten sam stan początkowy), SC-2 (log zgodny z `EXPECTED RESULTS`), SC-3 (paczka do IDE daje ten sam wynik co platforma).
