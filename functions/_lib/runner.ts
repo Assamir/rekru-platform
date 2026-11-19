@@ -71,7 +71,7 @@ export function publicConfig(env: RunnerEnv & { JAVA_RUNNER?: string }) {
     java: true,
     mode: proxy ? ('proxy' as const) : ('direct' as const),
     judge0Url: proxy ? undefined : judge0Url,
-    javaLanguageId: parseInt(env.JAVA_LANGUAGE_ID || '62', 10),
+    javaLanguageId: parseInt(env.JAVA_LANGUAGE_ID || '91', 10),
     accessCodeRequired: Boolean(env.ACCESS_CODE),
     engine: env.JAVA_RUNNER === 'local' ? 'lokalny JDK' : new URL(judge0Url).host,
   };
@@ -104,7 +104,7 @@ export async function runOnJudge0(req: RunRequest, env: RunnerEnv, fetchImpl: ty
     method: 'POST',
     headers,
     body: JSON.stringify({
-      language_id: parseInt(env.JAVA_LANGUAGE_ID || '62', 10),
+      language_id: parseInt(env.JAVA_LANGUAGE_ID || '91', 10),
       source_code: b64encode(req.source),
       stdin: '',
     }),

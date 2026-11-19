@@ -21,7 +21,7 @@ export function parseJavaStdout(stdout: string, lineMap: (LineOrigin | null)[]):
   const console: ConsoleLine[] = [];
   let mode: ParsedJavaOutput['mode'] = 'unknown';
   let done = false;
-  const lines = stdout.split('\n');
+  const lines = stdout.split(/\r?\n/); // lokalny JDK w Windows kończy linie przez \r\n
   if (lines[lines.length - 1] === '') lines.pop();
   for (const line of lines) {
     if (line.startsWith('@@JLT\t')) {

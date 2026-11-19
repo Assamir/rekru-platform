@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { analyzeJavaDependencies, analyzePackageJson, type DependencyStatus, type NpmPackage } from '../lib/buildFiles';
 import { useConfig } from '../lib/config';
+import { downloadIdeProject } from '../lib/ideZip';
 import { buildShareUrl } from '../lib/share';
 import { fileRole, isTestFile, parseTask, TaskParseError, type Task } from '../lib/task';
 import { Markdown } from './Markdown';
@@ -191,7 +192,7 @@ dependencies { testImplementation 'org.junit.jupiter:junit-jupiter:5.10.2' }
                 niewidoczny).
               </li>
               <li>
-                <b>Java</b>: wbudowane JUnit 5 (w tym <code>@ParameterizedTest</code>), AssertJ, SLF4J / Log4j 2. Kod kompiluje Judge0 (Java 13).
+                <b>Java</b>: wbudowane JUnit 5 (w tym <code>@ParameterizedTest</code>), AssertJ, SLF4J / Log4j 2. Kod kompiluje Judge0 (Java 17).
               </li>
               <li>
                 <b>TypeScript</b>: testy w plikach <code>*.test.ts</code> / <code>*.spec.ts</code> (składnia Vitest/Jest, <code>vi.fn</code>,{' '}
@@ -285,6 +286,15 @@ dependencies { testImplementation 'org.junit.jupiter:junit-jupiter:5.10.2' }
                 <a className="btn" href={link} target="_blank" rel="noreferrer">
                   Otwórz ↗
                 </a>
+              </div>
+              <div className="ide-download">
+                <button className="btn" onClick={() => downloadIdeProject(task).catch((e: Error) => setError(`Nie udało się przygotować projektu: ${e.message}`))}>
+                  ↓ Pobierz projekt (IDE)
+                </button>
+                <span className="muted small">
+                  To samo zadanie jako projekt {task.language === 'java' ? 'Gradle (JUnit 5, JDK 17+)' : 'npm (Vitest, Node 20+)'} do IntelliJ / VS Code –
+                  plan B albo dla kandydata, który woli własne IDE.
+                </span>
               </div>
               <p className="muted small">
                 Zadanie jest zapisane w samym linku (część po <code>#</code> nie trafia na serwer). Długość linku: {link.length.toLocaleString('pl-PL')}{' '}

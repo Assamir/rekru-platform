@@ -115,6 +115,8 @@ button { font: inherit; color: inherit; }
 .field input, .share input { background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; color: var(--text); font: 13px var(--mono); min-width: 0; }
 .share { display: flex; gap: 8px; margin-top: 12px; }
 .share input { flex: 1; }
+.ide-download { display: flex; align-items: center; gap: 10px; margin-top: 10px; }
+.ide-download .btn { flex-shrink: 0; }
 .home-footer { margin-top: 28px; color: var(--muted); font-size: 13px; text-align: center; }
 
 /* ---------- markdown ---------- */

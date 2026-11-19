@@ -1,6 +1,6 @@
 // ===================== JUnit-lite (platforma rekrutacyjna) =====================
 // Minimalna, zgodna składniowo podmiana JUnit 5 + AssertJ, kompilowana razem z kodem
-// kandydata do jednego pliku Main.java (Java 8+). Nie edytuj – generowane automatycznie.
+// kandydata do jednego pliku Main.java (Java 17). Nie edytuj – generowane automatycznie.
 
 @java.lang.annotation.Retention(java.lang.annotation.RetentionPolicy.RUNTIME) @java.lang.annotation.Target(java.lang.annotation.ElementType.METHOD) @interface Test {}
 @java.lang.annotation.Retention(java.lang.annotation.RetentionPolicy.RUNTIME) @java.lang.annotation.Target(java.lang.annotation.ElementType.METHOD) @interface BeforeEach {}
@@ -597,6 +597,8 @@ final class __JUnitLiteRunner {
       System.setOut(new java.io.PrintStream(new java.io.FileOutputStream(java.io.FileDescriptor.out), true, "UTF-8"));
       System.setErr(new java.io.PrintStream(new java.io.FileOutputStream(java.io.FileDescriptor.err), true, "UTF-8"));
     } catch (java.io.UnsupportedEncodingException ignored) { }
+    // Gradle uruchamia testy w wątku „Test worker” – ta sama nazwa trafia do logów (wzorzec logback %thread).
+    Thread.currentThread().setName("Test worker");
     boolean any = false;
     for (String n : classNames) {
       Class<?> c;
@@ -612,6 +614,7 @@ final class __JUnitLiteRunner {
         try { main = c.getDeclaredMethod("main", String[].class); } catch (NoSuchMethodException e) { continue; }
         if (!java.lang.reflect.Modifier.isStatic(main.getModifiers())) continue;
         main.setAccessible(true);
+        Thread.currentThread().setName("main");
         System.out.println("@@JLT_MODE\tMAIN\t" + b64(n));
         try { main.invoke(null, (Object) new String[0]); } catch (Throwable t) { throw unwrap(t); }
         return;

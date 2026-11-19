@@ -13,9 +13,11 @@ function compileAndRun(source: string) {
   const dir = mkdtempSync(join(tmpdir(), 'rekru-test-'));
   try {
     writeFileSync(join(dir, 'Main.java'), source);
-    const javac = spawnSync('javac', ['-encoding', 'UTF-8', '-nowarn', '--release', '11', 'Main.java'], { cwd: dir, encoding: 'utf8' });
+    // Poziom języka jak na Judge0 (JDK 17). Mała sterta: JVM nie rezerwuje 1/4 RAM-u, więc testy
+    // nie padają na maszynach z prawie wyczerpaną pamięcią wirtualną.
+    const javac = spawnSync('javac', ['-J-Xms32m', '-J-Xmx512m', '-encoding', 'UTF-8', '-nowarn', '--release', '17', 'Main.java'], { cwd: dir, encoding: 'utf8' });
     if (javac.status !== 0) return { compiled: false, compileOutput: javac.stderr + javac.stdout, stdout: '', stderr: '' };
-    const run = spawnSync('java', ['Main'], { cwd: dir, encoding: 'utf8', timeout: 20_000 });
+    const run = spawnSync('java', ['-Xms16m', '-Xmx256m', 'Main'], { cwd: dir, encoding: 'utf8', timeout: 20_000 });
     return { compiled: true, compileOutput: '', stdout: run.stdout, stderr: run.stderr };
   } finally {
     rmSync(dir, { recursive: true, force: true });
@@ -259,6 +261,28 @@ describe.skipIf(!hasJavac)('Logger-lite', () => {
     expect(text).toMatch(/DEBUG ServiceTest - start/);
     expect(text).toMatch(/INFO  Service - liczę dla 2 i y/);
     expect(text).toMatch(/java.lang.RuntimeException: boom/);
+  });
+
+  it('testy działają w wątku „Test worker” (jak w Gradle), więc log ma wzorzec logback', () => {
+    const program = buildJavaProgram([
+      {
+        path: 'ThreadNameTest.java',
+        content: `import org.junit.jupiter.api.Test;\nimport org.slf4j.Logger;\nimport org.slf4j.LoggerFactory;\nclass ThreadNameTest {\n  private static final Logger logger = LoggerFactory.getLogger(ThreadNameTest.class);\n  @Test void logs() { logger.info("msg {}", 1); logger.error("err"); }\n}\n`,
+      },
+    ]);
+    const out = compileAndRun(program.source);
+    expect(out.compileOutput).toBe('');
+    const lines = parseJavaStdout(out.stdout, program.lineMap).console.map((c) => c.text);
+    expect(lines[0]).toMatch(/^\d\d:\d\d:\d\d\.\d{3} \[Test worker\] INFO  ThreadNameTest - msg 1$/);
+    expect(lines[1]).toMatch(/^\d\d:\d\d:\d\d\.\d{3} \[Test worker\] ERROR ThreadNameTest - err$/);
+  });
+
+  it('tryb programu (main) zachowuje nazwę wątku „main”', () => {
+    const program = buildJavaProgram([
+      { path: 'App.java', content: 'public class App { public static void main(String[] a) { System.out.println(Thread.currentThread().getName()); } }' },
+    ]);
+    const out = compileAndRun(program.source);
+    expect(parseJavaStdout(out.stdout, program.lineMap).console.map((c) => c.text)).toEqual(['main']);
   });
 });
 

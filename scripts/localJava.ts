@@ -42,7 +42,7 @@ export async function runJavaLocally(req: RunRequest): Promise<RunResponse> {
   try {
     await writeFile(join(dir, 'Main.java'), req.source, 'utf8');
     const base = { stdout: '', stderr: '', compileOutput: '', message: '', memoryKb: null };
-    const javac = await exec('javac', ['-encoding', 'UTF-8', '-nowarn', 'Main.java'], dir, 30_000);
+    const javac = await exec('javac', ['-encoding', 'UTF-8', '-nowarn', '--release', '17', 'Main.java'], dir, 30_000);
     if (javac.code !== 0) {
       return { ...base, ok: false, status: 'Compilation Error', statusId: 6, compileOutput: javac.stderr + javac.stdout, timeSec: null };
     }

@@ -8,10 +8,13 @@
     "build": "vite build",
     "preview": "vite preview",
     "test": "vitest run",
+    "test:ide": "vitest run test/ideProject.test.ts test/tasks.test.ts",
+    "test:judge0": "vitest run test/tasks.test.ts",
     "typecheck": "tsc --noEmit -p ."
   },
   "dependencies": {
     "dompurify": "^3.4.18",
+    "fflate": "^0.8.3",
     "marked": "^18.2.1",
     "monaco-editor": "^0.57.0",
     "react": "^19.3.1",

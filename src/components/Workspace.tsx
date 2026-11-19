@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { analyzeJavaDependencies, analyzePackageJson, cdnPackages, readTsConfig } from '../lib/buildFiles';
+import { downloadIdeProject } from '../lib/ideZip';
 import { configureTypeScript, languageForPath, modelUri, monaco } from '../lib/monaco';
 import { decodeTask, taskId } from '../lib/share';
 import { fileRole, isTestFile, parseTask, serializeTask, type Task, type TaskFile } from '../lib/task';
@@ -317,6 +318,14 @@ function WorkspaceView({ task, id, accessCode }: { task: Task; id: string; acces
     setTimeout(() => URL.revokeObjectURL(url), 1000);
   }
 
+  async function downloadIde() {
+    try {
+      await downloadIdeProject(task, currentFiles());
+    } catch (e) {
+      alert(`Nie udało się przygotować projektu: ${(e as Error).message}`);
+    }
+  }
+
   const onDragLeft = useDrag((e) => {
     const rect = mainRef.current!.getBoundingClientRect();
     setLeftWidth(Math.min(60, Math.max(18, ((e.clientX - rect.left) / rect.width) * 100)));
@@ -343,13 +352,21 @@ function WorkspaceView({ task, id, accessCode }: { task: Task; id: string; acces
           )}
         </div>
         <div className="ws-actions">
-          <Timer id={id} durationMin={task.durationMin} />
+          {/* Zadanie bez pola `duration` nie pokazuje zegara – czas kontroluje wtedy prowadzący. */}
+          {task.durationMin !== undefined && <Timer id={id} durationMin={task.durationMin} />}
           <div className="font-size" title="Rozmiar czcionki">
             <button onClick={() => setFontSize((s) => Math.max(11, s - 1))}>A−</button>
             <button onClick={() => setFontSize((s) => Math.min(28, s + 1))}>A+</button>
           </div>
           <button className="btn" onClick={downloadSolution} title="Pobierz zadanie z Twoim kodem (.md)">
             ↓ Pobierz
+          </button>
+          <button
+            className="btn"
+            onClick={downloadIde}
+            title={`Pobierz zadanie z Twoim kodem jako projekt ${task.language === 'java' ? 'Gradle' : 'npm'} do IntelliJ / VS Code (.zip)`}
+          >
+            ↓ Pobierz projekt (IDE)
           </button>
           <button className="btn primary run" onClick={run} disabled={running} title="Ctrl+Enter">
             {running ? 'Uruchamianie…' : '▶ Uruchom testy'}

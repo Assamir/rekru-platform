@@ -14,7 +14,7 @@ export const STATIC_FALLBACK: PublicConfig = {
   java: true,
   mode: 'direct',
   judge0Url: 'https://ce.judge0.com',
-  javaLanguageId: 62,
+  javaLanguageId: 91,
   accessCodeRequired: false,
   engine: 'ce.judge0.com',
 };
